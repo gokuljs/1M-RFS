@@ -1,20 +1,11 @@
 # 1M-RFS
 
-## Purpose
+An experimental repository for designing and testing backend systems toward handling up to one million requests.
 
-This repository explores how backend systems can be designed, implemented, and tested toward handling up to one million requests. The project is intended to make the engineering trade-offs measurable; it does not claim a performance result before the experiments are run.
+Initial focus:
 
-## Planned exploration
+- C++
+- Node.js
+- Redis
 
-The initial work will explore:
-
-- C++ services and supporting tooling
-- Node.js services and supporting tooling
-- Redis-backed workloads
-- Additional backend technologies as the experiments evolve
-
-Implementations, requirements, benchmark methodology, and results will be added incrementally so each experiment can be reviewed and reproduced independently.
-
-## Project updates
-
-A technical blog post documenting the approach, experiments, and findings will be published as the work develops.
+Requirements, implementations, benchmarks, and results will be added incrementally. A technical blog post will document the findings. No performance claims are made before testing.
