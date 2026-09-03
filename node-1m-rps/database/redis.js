@@ -2,7 +2,11 @@ import Redis from "ioredis";
 
 const isCluster = process.env.REDIS_CLUSTER === "true";
 
-const redis = isCluster ? new Redis.Cluster([{ port: 7000 }]) : new Redis();
+const redis = isCluster
+  ? new Redis.Cluster([{ port: 7000 }], {
+      redisOptions: { protocol: 2 },
+    })
+  : new Redis({ protocol: 2 });
 
 redis.on("ready", () => {
   if (isCluster) {

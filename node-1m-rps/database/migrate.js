@@ -7,7 +7,7 @@
 import { DB } from "./index.js";
 import Redis from "ioredis";
 
-const redis = new Redis();
+const redis = new Redis({ protocol: 2 });
 
 const BATCH_SIZE = 2000;
 
