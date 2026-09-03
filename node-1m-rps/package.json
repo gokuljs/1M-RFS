@@ -4,19 +4,27 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test",
     "seed": "node database/seed.js",
     "migrate": "node database/migrate.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "dependencies": {
-    "autocannon": "^8.0.0",
-    "cpeak": "^2.5.0",
-    "express": "^5.2.1",
-    "fastify": "^5.7.1",
-    "ioredis": "^5.9.2",
-    "pg": "^8.17.1"
+    "cpeak": "2.9.2",
+    "express": "5.2.1",
+    "fastify": "5.12.1",
+    "ioredis": "6.0.0",
+    "pg": "8.23.0"
+  },
+  "devDependencies": {
+    "autocannon": "8.0.0"
+  },
+  "overrides": {
+    "uuid": "11.1.1"
   }
 }
