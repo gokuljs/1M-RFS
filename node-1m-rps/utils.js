@@ -1,10 +1,5 @@
-import crypto from "crypto";
 import { redis } from "./database/redis.js";
-
-const generateCode = () => {
-  // 375 random bytes becomes 500 Base64 characters
-  return crypto.randomBytes(375).toString("base64").substring(0, 500);
-};
+import { generateCode } from "./utils/generate-code.js";
 
 let cachedMaxId = 0;
 let lastCacheUpdate = 0;
