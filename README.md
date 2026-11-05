@@ -19,8 +19,9 @@ assumptions are:
 - Redis on `127.0.0.1:6379`
 - PostgreSQL on `127.0.0.1:5432` for the database-backed routes and seed/migrate scripts
 
-The Express server only exposes `GET /simple` and requires neither Redis nor
-PostgreSQL. The database setup below applies to the other server experiments.
+The Express and Fastify servers only expose `GET /simple` and require neither
+Redis nor PostgreSQL. The database setup below applies to the cpeak experiment
+and the database scripts.
 
 Install the pinned Node dependencies:
 
@@ -52,12 +53,12 @@ Initialize PostgreSQL, if needed, and seed data with:
 PG_CONNECT=true npm run seed
 ```
 
-For the Fastify and cpeak servers, use `PG_CONNECT=false` to run without PostgreSQL.
+For the cpeak server, use `PG_CONNECT=false` to run without PostgreSQL.
 The current HTTP entry points are:
 
 ```sh
-node express.js                   # port 3001; no databases required
-PG_CONNECT=false node fastify.js  # port 3002
+node express.js                  # port 3001; no databases required
+node fastify.js                  # port 3002; no databases required
 PG_CONNECT=false node cpeak.js    # port 3000
 ```
 
