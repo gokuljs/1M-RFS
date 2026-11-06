@@ -36,3 +36,13 @@ tmp/
 
 # Local Redis cluster data created by the benchmark setup script
 redis-cluster/
+
+# Terraform local state, downloaded providers, inputs, and saved plans
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.tfplan
+crash.log
+crash.*.log
