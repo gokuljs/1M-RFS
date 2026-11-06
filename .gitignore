@@ -36,3 +36,19 @@ tmp/
 
 # Local Redis cluster data created by the benchmark setup script
 redis-cluster/
+
+# Local Terraform learning files and generated artifacts
+/infra/
+**/.terraform/
+*.tf
+*.tf.json
+*.tfvars*
+*.tfstate*
+*.tfplan
+*.tftest.hcl
+*.tfmock.hcl
+*.tfmock.json
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
+.terraformrc
+terraform.rc
