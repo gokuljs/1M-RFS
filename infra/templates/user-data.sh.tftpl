@@ -1,0 +1,86 @@
+#!/bin/bash
+set -Eeuo pipefail
+exec >> /var/log/rfs-bootstrap.log 2>&1
+trap 'printf "Bootstrap failed at line %s\n" "$LINENO" >&2' ERR
+
+source /etc/os-release
+[[ "$ID" == "amzn" && "$VERSION_ID" == "2023" && "$(uname -m)" == "x86_64" ]]
+dnf install -y ca-certificates git tar xz gzip logrotate amazon-ssm-agent
+systemctl enable --now amazon-ssm-agent
+
+NODE_VERSION='${node_version}'
+NODE_ARCHIVE="node-v$NODE_VERSION-linux-x64.tar.xz"
+BOOTSTRAP_DIR=$(mktemp -d)
+trap 'rm -rf "$BOOTSTRAP_DIR"' EXIT
+cd "$BOOTSTRAP_DIR"
+curl --fail --show-error --location --retry 5 --retry-all-errors \
+  "https://nodejs.org/dist/v$NODE_VERSION/$NODE_ARCHIVE" -o "$NODE_ARCHIVE"
+curl --fail --show-error --location --retry 5 --retry-all-errors \
+  "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt" -o SHASUMS256.txt
+grep -F "  $NODE_ARCHIVE" SHASUMS256.txt | sha256sum --check -
+tar -xJf "$NODE_ARCHIVE" -C /usr/local --strip-components=1
+npm install --global --prefix /usr/local --omit=dev 'pm2@${pm2_version}'
+
+id nodeapp >/dev/null 2>&1 || useradd --create-home --user-group --shell /bin/bash nodeapp
+install -d -o nodeapp -g nodeapp /opt/rfs /var/log/rfs /home/nodeapp/.pm2
+install -d -m 0755 /etc/rfs
+
+runuser -u nodeapp -- git -C /opt/rfs init
+runuser -u nodeapp -- git -C /opt/rfs remote add origin '${app_repository}'
+runuser -u nodeapp -- git -C /opt/rfs fetch --depth 1 origin '${app_revision}'
+runuser -u nodeapp -- git -C /opt/rfs checkout --detach FETCH_HEAD
+[[ "$(git -c safe.directory=/opt/rfs -C /opt/rfs rev-parse HEAD)" == '${app_revision}' ]]
+runuser -u nodeapp -- env HOME=/home/nodeapp \
+  npm --prefix /opt/rfs/node-1m-rps ci --omit=dev --no-audit --no-fund
+
+cat > /etc/rfs/ecosystem.config.cjs <<'PM2_CONFIG'
+module.exports = ${pm2_config};
+PM2_CONFIG
+
+cat > /etc/systemd/system/rfs.service <<'SYSTEMD_UNIT'
+[Unit]
+Description=RFS Node application managed by PM2
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=nodeapp
+Group=nodeapp
+Environment=HOME=/home/nodeapp
+Environment=PM2_HOME=/home/nodeapp/.pm2
+WorkingDirectory=/opt/rfs/node-1m-rps
+ExecStart=/usr/local/bin/pm2-runtime start /etc/rfs/ecosystem.config.cjs
+Restart=always
+RestartSec=5
+KillSignal=SIGINT
+TimeoutStopSec=45
+LimitNOFILE=65535
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
+SYSTEMD_UNIT
+
+cat > /etc/logrotate.d/rfs <<'LOGROTATE'
+/var/log/rfs/*.log /home/nodeapp/.pm2/pm2.log {
+    daily
+    maxsize 10M
+    rotate 3
+    compress
+    missingok
+    notifempty
+    copytruncate
+    su nodeapp nodeapp
+}
+LOGROTATE
+
+systemctl daemon-reload
+systemctl enable --now rfs.service
+curl --fail --show-error --silent --retry 30 --retry-delay 2 \
+  --retry-connrefused --retry-all-errors --max-time 3 \
+  'http://127.0.0.1:${app_port}/simple'
+printf '\nBootstrap complete: Node %s, PM2 %s, application %s\n' \
+  "$(node --version)" '${pm2_version}' '${app_revision}'

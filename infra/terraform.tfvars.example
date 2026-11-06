@@ -1,0 +1,26 @@
+aws_region   = "ap-south-1"
+project_name = "rfs-lab"
+
+# Replace with the full public Git commit you want every EC2 instance to run.
+# From the repository root: git rev-parse HEAD
+app_revision  = "REPLACE_WITH_A_40_CHARACTER_COMMIT_SHA"
+app_framework = "cpeak" # cpeak: 3000; express: 3001
+
+instance_type     = "t2.micro"
+cpu_credit_mode   = "standard" # unlimited permits sustained bursting and can add CPU charges
+min_instances     = 1
+desired_instances = 1
+max_instances     = 3
+cpu_target_percent = 60
+
+# Optional: measured ALB requests per target PER MINUTE, not requests per second.
+# target_requests_per_minute = 6000
+
+# Optional existing ACM certificate in aws_region; also configure matching DNS.
+# certificate_arn = "arn:aws:acm:ap-south-1:123456789012:certificate/00000000-0000-0000-0000-000000000000"
+
+# Optional: restrict load-balancer traffic to your load generator's public IP.
+# allowed_client_cidrs = ["203.0.113.10/32"]
+
+# Optional: pin the regional AL2023 x86_64 image after checking resolved_ami_id.
+# ami_id = "ami-0123456789abcdef0"
