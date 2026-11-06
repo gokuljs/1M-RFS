@@ -8,6 +8,9 @@ node_modules/
 !.env.example
 **/keys.js
 *.local
+.aws/
+*.pem
+*.key
 
 # Logs and runtime output
 *.log
@@ -37,18 +40,15 @@ tmp/
 # Local Redis cluster data created by the benchmark setup script
 redis-cluster/
 
-# Local Terraform learning files and generated artifacts
-/infra/
+# Terraform local values, state, caches, and saved plans
 **/.terraform/
-*.tf
-*.tf.json
 *.tfvars*
+!*.tfvars.example
+!*.tfvars.json.example
 *.tfstate*
 *.tfplan
-*.tftest.hcl
-*.tfmock.hcl
-*.tfmock.json
-.terraform.lock.hcl
+tfplan
+tfplan.*
 .terraform.tfstate.lock.info
 .terraformrc
 terraform.rc
