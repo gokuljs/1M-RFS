@@ -3,8 +3,8 @@ module.exports = {
     {
       // Specify F like this: F=express pm2 start ecosystem.config.cjs
       // F indicates the framework to use, Options are: cpeak, express, fastify
-      name: process.env.F || "cpeak",
-      script: `./${process.env.F || "cpeak"}.js`,
+      name: process.env.F || "fastify",
+      script: `./${process.env.F || "fastify"}.js`,
       instances: "max",
       exec_mode: "cluster",
       env: {
